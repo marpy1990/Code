@@ -28,7 +28,6 @@ class Sensor(object):
         self.connection = None
         self._block = threading.Semaphore(0)
         self._error_block = threading.Semaphore(1)
-        #self._post_block = threading.Semaphore(1)
         self.option_table = {
             "set_periods": self.set_periods,
             "cancel_categorys": self.cancel_categorys
@@ -86,22 +85,14 @@ class Sensor(object):
 
     def _post(self, category):
         try:
-            #self._post_block.acquire()
-            #print "--",category,"--"
             probe = self.category2probe[category]
-            #print "--",probe.name,"--"
             data_node = probe.getdata(category)
-            #print "--",data_node,"--"
             data_node.tag = "post"
             root = ElementTree.Element(tag = "message")
             root.append(data_node)
             message = ElementTree.tostring(root)
-            #print "--",message,"--"
         except:
             return
-        finally:
-            pass
-            #self._post_block.release()
 
         try:
             self.connection.send(message)
@@ -125,7 +116,7 @@ class Sensor(object):
         while True:
             try:
                 message = self.connection.recv()
-                if message is None:
+                if message == "":
                     break
                 handle_message(message)
             except:
