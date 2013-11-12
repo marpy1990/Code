@@ -77,6 +77,7 @@ ModelManifest.xml
 *.bak
 
 #Python
+/Python/setup/
 *.pyc
 *.pyo
 *.log
