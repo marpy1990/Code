@@ -7,6 +7,7 @@
 可以通过继承，实现模块化的完整功能
 
 version 1.1.0: 传输机制不再采用VirtualSocket与socket并行，而是采用GeneralSocket统一处理，重写了与之有关的方法
+version 1.1.1: 处理方法改为handle,不再是处理消息而是处理链接
 
 Basic usage::
 
@@ -153,16 +154,14 @@ class BlockServer(ThreadManagement):
         if not "connection" in thread_info:
             thread_info["connection"] = []
         thread_info["connection"].insert(0, {"socket": msg_socket})
-        msg = msg_socket.recv()
-        
-        self.handle_message(msg)
+        self.handle()
 
-    def handle_message(self, message):
+    def handle(self):
         """
-        消息处理函数，处理外部传入的消息，供用户继承
-        message: 消息文本
+        处理函数，处理外部传入的链接，供用户继承
         """
         #The code below is just for test!!!
+        message = self.recv()
         print message
         if self.name == "a":
             self.connect("b")
