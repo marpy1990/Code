@@ -28,6 +28,7 @@ class Sensor(object):
         self.connection = None
         self._block = threading.Semaphore(0)
         self._error_block = threading.Semaphore(1)
+        self._reconnecting = False
         self.option_table = {
             "set_periods": self.set_periods,
             "cancel_categorys": self.cancel_categorys
@@ -108,8 +109,13 @@ class Sensor(object):
 
     def connect_error(self):
         self._error_block.acquire()
+        if self._reconnecting:
+            self._error_block.release()
+            return
+        self._reconnecting = True
+        self._error_block.release()
         self.connect()
-        self._error_block = threading.Semaphore(1)
+        self._reconnecting = False
 
     @thread
     def handle(self):
