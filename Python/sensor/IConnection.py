@@ -10,7 +10,7 @@ class IConnection(object):
     
     def __init__(self, config):
         super(IConnection, self).__init__()
-        self._send_block = threading.Semaphore(1)
+        #self._send_block = threading.Semaphore(1)
         self.type_table = {
             "socketclient": _SocketClient,
             "socketserver": None,   #may be written latter
