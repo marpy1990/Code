@@ -161,13 +161,11 @@ class Sensor(object):
         timer = self.category2timer[category]
         timer.set_period(Timer.INFI)
         probe = self.category2probe[category]
-        stopprobe_flag = True
         for category in probe.categorys:
             period = self.category2timer[category]
             if not period == Timer.INFI:
-                stopprobe_flag = False
                 break
-        if stopprobe_flag:
+        else:
             probe.stopprobe()
 
 if __name__ == '__main__':
