@@ -22,7 +22,10 @@ class Timer(object):
     @property
     def period(self):
         return self._period
-
+    @period.setter
+    def period(self, value):
+        self.set_period(value)
+    
     @property
     def state(self):
         return self._state

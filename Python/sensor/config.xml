@@ -10,7 +10,6 @@
     </to>
   </connect>
   <probes>
-    <path>testprobe2.xml</path>
     <path>testprobe1.xml</path>
   </probes>
 </config>
