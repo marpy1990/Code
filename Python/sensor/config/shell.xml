@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!DOCTYPE shell [
+  <!ELEMENT shell (process)>
+  <!ELEMENT process (#PCDATA)>
+]>
+<shell>
+  <process>package\shell\shell.exe</process>
+</shell>
