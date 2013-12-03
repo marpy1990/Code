@@ -81,6 +81,7 @@ ModelManifest.xml
 *.pyc
 *.pyo
 *.log
+*.log.*
 
 #Java
 /Java/

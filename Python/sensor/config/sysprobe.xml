@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE probe [
+  <!ELEMENT probe (adapter,connector,categorys)>
+  <!ELEMENT adapter (module,class)>
+  <!ELEMENT connector (module,class,(pipe|socket)?)>
+  <!ELEMENT categorys (category)+>
+  <!ELEMENT category (#PCDATA)>
+  <!ATTLIST category period CDATA #IMPLIED>
+  <!ELEMENT module (#PCDATA)>
+  <!ELEMENT class (#PCDATA)>
+  <!ELEMENT pipe (process)>
+  <!ELEMENT process (#PCDATA)>
+  <!ELEMENT socket (ip,port)>
+  <!ELEMENT ip (#PCDATA)>
+  <!ELEMENT port (#PCDATA)>
+]>
+<probe>
+  <adapter>
+    <module>lib.adapters</module>
+    <class>ProbeConnectAdapter</class>
+  </adapter>
+  <connector>
+    <module>SystemProbe</module>
+    <class>PipeToSensor</class>
+    <pipe>
+      <process>package\testprobe\probe.py</process>
+    </pipe>
+  </connector>
+  <categorys>
+    <category period="3.0">CPU</category>
+    <category>Memory</category>
+  </categorys>
+</probe>
