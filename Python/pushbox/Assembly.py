@@ -1,299 +1,299 @@
 #coding=gbk
 """
 Assembly:
-        ×éºÏÍ¼ÊÇÒ»Ğ©»ù±¾Í¼ÏñµÄ¼¯ºÏ£¬ÓÃÓÚÊµÏÖ¶ÔÕâĞ©Í¼µÄÕûÌå²Ù×÷,ÄÚ²¿¶ÔÓÃ»§Í¸Ã÷
+        ç»„åˆå›¾æ˜¯ä¸€äº›åŸºæœ¬å›¾åƒçš„é›†åˆï¼Œç”¨äºå®ç°å¯¹è¿™äº›å›¾çš„æ•´ä½“æ“ä½œ,å†…éƒ¨å¯¹ç”¨æˆ·é€æ˜
 
-AssemblyµÄÊµÏÖÄÚÈİ£º
-		ÊµÏÖ¶à¸ö»ù±¾Í¼ĞÎµÄ·â×°ºÍ²Ù×÷
-		ÊµÏÖ×é¼şµÄÂß¼­ÎÄ¼ş´æ´¢
-	
-AssemblyµÄ»ù±¾½á¹¹:
-	Assembly:
-		name:×éÍ¼Ãû×Ö
-		_pos:×éÍ¼µÄÎ»ÖÃ
-		_width:×éÍ¼µÄÕûÌå¿í¶È
-		_height:×éÍ¼µÄÕûÌå¸ß¶È
-		_graphList:ËùÓĞ»ù±¾Í¼ÏñµÄ¼¯ºÏ
-		_isDraw:ÊÇ·ñÕıÔÚÏÔÊ¾
+Assemblyçš„å®ç°å†…å®¹ï¼š
+        å®ç°å¤šä¸ªåŸºæœ¬å›¾å½¢çš„å°è£…å’Œæ“ä½œ
+        å®ç°ç»„ä»¶çš„é€»è¾‘æ–‡ä»¶å­˜å‚¨
+    
+Assemblyçš„åŸºæœ¬ç»“æ„:
+    Assembly:
+        name:ç»„å›¾åå­—
+        _pos:ç»„å›¾çš„ä½ç½®
+        _width:ç»„å›¾çš„æ•´ä½“å®½åº¦
+        _height:ç»„å›¾çš„æ•´ä½“é«˜åº¦
+        _graphList:æ‰€æœ‰åŸºæœ¬å›¾åƒçš„é›†åˆ
+        _isDraw:æ˜¯å¦æ­£åœ¨æ˜¾ç¤º
 
-AssemblyµÄÎÄ¼ş´æ´¢½á¹¹:
-		ÓÉÓÚgraphicsµÄÀà²»ÄÜÖ±½Ó´æ´¢ÔÚÎÄ¼şÖĞ£¬¹ÊÖ»ÄÜÊÖ¶¯½«Æä×ª»¯³É¿ÉÒÔ´æ´¢µÄ¸ñÊ½
-		²ÉÓÃ×ÖµäµÄĞÎÊ½±£´æ×éÍ¼£¬½«ËùÓĞ×ÓÍ¼µÄ¹Ø¼üĞÅÏ¢´æÈë×ÖµäµÄ¹Ø¼üÁĞ±íÖĞ
-		¸ñÊ½ÊÇ	assDict = { "state":stateDict , "graph":graphInfoList }
-					stateDict = {"x" , "y" , "width", "height", "name"}
-					graphInfoList = [ graphInfo , ... ]
-						graphInfo = {"type" , "content"}
-							content = {"x","y","x1","y1","x2","y2","r","outline","fill"}
+Assemblyçš„æ–‡ä»¶å­˜å‚¨ç»“æ„:
+        ç”±äºgraphicsçš„ç±»ä¸èƒ½ç›´æ¥å­˜å‚¨åœ¨æ–‡ä»¶ä¸­ï¼Œæ•…åªèƒ½æ‰‹åŠ¨å°†å…¶è½¬åŒ–æˆå¯ä»¥å­˜å‚¨çš„æ ¼å¼
+        é‡‡ç”¨å­—å…¸çš„å½¢å¼ä¿å­˜ç»„å›¾ï¼Œå°†æ‰€æœ‰å­å›¾çš„å…³é”®ä¿¡æ¯å­˜å…¥å­—å…¸çš„å…³é”®åˆ—è¡¨ä¸­
+        æ ¼å¼æ˜¯ assDict = { "state":stateDict , "graph":graphInfoList }
+                    stateDict = {"x" , "y" , "width", "height", "name"}
+                    graphInfoList = [ graphInfo , ... ]
+                        graphInfo = {"type" , "content"}
+                            content = {"x","y","x1","y1","x2","y2","r","outline","fill"}
 """
 from time import*
 from graphics import*
 from cPickle import*
 
 class Assembly:
-	def __init__(self,width=0,height=0,pos=Point(0,0)):			
-		""" ×éÍ¼³õÊ¼»¯ """
-		self._isDraw=False
-		self._graphList=[]
-		self._pos=pos
-		self._width=width
-		self._height=height
-		self.name="unknown"
-	
-	def setState(self,pos,width,height):
-		"""×éÍ¼Î»ÖÃ¡¢´óĞ¡ÉèÖÃ"""
-		self.amplifyTo(width,height)
-		self.moveTo(pos)
-	
-	def appendGraphs(self,*graph):
-		"""Ìí¼ÓÍ¼Ïñ×éºÏ³ÉÒ»¸ö×éÍ¼"""
-		size=len(graph)
-		for i in range(0,size):
-			self._graphList.append(graph[i])
-	
-	def appendAssemblies(self,*assembly):
-		"""½«×éÍ¼ºÏ²¢Èëµ±Ç°Í¼"""
-		size=len(assembly)
-		for i in range(0,size):
-			gsize=len(assembly[i]._graphList)
-			for j in range(0,gsize):
-				self._graphList.append(assembly[i]._graphList[j])
+    def __init__(self,width=0,height=0,pos=Point(0,0)):         
+        """ ç»„å›¾åˆå§‹åŒ– """
+        self._isDraw=False
+        self._graphList=[]
+        self._pos=pos
+        self._width=width
+        self._height=height
+        self.name="unknown"
+    
+    def setState(self,pos,width,height):
+        """ç»„å›¾ä½ç½®ã€å¤§å°è®¾ç½®"""
+        self.amplifyTo(width,height)
+        self.moveTo(pos)
+    
+    def appendGraphs(self,*graph):
+        """æ·»åŠ å›¾åƒç»„åˆæˆä¸€ä¸ªç»„å›¾"""
+        size=len(graph)
+        for i in range(0,size):
+            self._graphList.append(graph[i])
+    
+    def appendAssemblies(self,*assembly):
+        """å°†ç»„å›¾åˆå¹¶å…¥å½“å‰å›¾"""
+        size=len(assembly)
+        for i in range(0,size):
+            gsize=len(assembly[i]._graphList)
+            for j in range(0,gsize):
+                self._graphList.append(assembly[i]._graphList[j])
 
-	def importDict(self,assDict):
-		"""´Ó×ÖµäÖĞµ¼Èë×éÍ¼£¬²¢¶ÔÆä´óĞ¡°´ÏÖ³¤¿í½øĞĞµ÷Õû"""
-		stateDict=assDict["state"]
-		self.name=stateDict["name"]
-		p=Point(stateDict["x"],stateDict["y"])
-		self._importDict(assDict)
-		pos,width,height=self._pos,self._width,self._height
-		self._pos,self._width,self._height=p,stateDict["width"],stateDict["height"]
-		if width!=0 and height!=0:
-			self.amplifyTo(width,height)
-			self.moveTo(pos)
+    def importDict(self,assDict):
+        """ä»å­—å…¸ä¸­å¯¼å…¥ç»„å›¾ï¼Œå¹¶å¯¹å…¶å¤§å°æŒ‰ç°é•¿å®½è¿›è¡Œè°ƒæ•´"""
+        stateDict=assDict["state"]
+        self.name=stateDict["name"]
+        p=Point(stateDict["x"],stateDict["y"])
+        self._importDict(assDict)
+        pos,width,height=self._pos,self._width,self._height
+        self._pos,self._width,self._height=p,stateDict["width"],stateDict["height"]
+        if width!=0 and height!=0:
+            self.amplifyTo(width,height)
+            self.moveTo(pos)
 
-	def _importDict(self,assDict):
-		"""´Ó×ÖµäÖĞµ¼Èë×éÍ¼£¬²»¶ÔÆä´óĞ¡½øĞĞµ÷Õû"""
-		graphInfoList=assDict["graph"]
-		self._graphList=[]
-		size=len(graphInfoList)					#fileDataList¸ñÊ½£ºlist=[{type,content},...]
-		for i in range(0,size):					#ÆäÖĞ£¬content={x0,x1,y0,y1,color0,color1,...}
-			type=graphInfoList[i]["type"]							
-			content=graphInfoList[i]["content"]
-			if type=="Point":
-				graph=Point(content["x"],content["y"])
-				color=content["outline"]
-				graph.setOutline(color)
-				self._graphList.append(graph)
-			elif type=="Line":
-				p0,p1=Point(content["x1"],content["y1"]),Point(content["x2"],content["y2"])
-				graph=Line(p0,p1)
-				color=content["fill"]
-				graph.setFill(color)
-				self._graphList.append(graph)
-			elif type=="Rectangle":
-				p0,p1=Point(content["x1"],content["y1"]),Point(content["x2"],content["y2"])
-				graph=Rectangle(p0,p1)
-				outline=content["outline"]
-				fill=content["fill"]
-				graph.setOutline(outline)
-				graph.setFill(fill)
-				self._graphList.append(graph)
-			elif type=="Circle":
-				p=Point(content["x"],content["y"])
-				graph=Circle(p,content["r"])
-				outline=content["outline"]
-				fill=content["fill"]
-				graph.setOutline(outline)
-				graph.setFill(fill)
-				self._graphList.append(graph)
-			elif type=="Oval":
-				p0,p1=Point(content["x1"],content["y1"]),Point(content["x2"],content["y2"])
-				graph=Oval(p0,p1)
-				outline=content["outline"]
-				fill=content["fill"]
-				graph.setOutline(outline)
-				graph.setFill(fill)
-				self._graphList.append(graph)
-		
-	def exportDict(self):					
-		"""´ÓÏÖÓĞÍ¼ÖĞµ¼³ö×Öµä"""
-		assDict={"state":{	"x":self._pos.getX(),
-							"y":self._pos.getY(),
-							"width":self._width,
-							"height":self._height,
-							"name":self.name}}
-		graphInfoList=[]
-		list=self._graphList
-		size=len(list)
-		for i in range(0,size):
-			if isinstance(list[i],Point):
-				x,y=list[i].getX(),list[i].getY()
-				color=list[i].config["outline"]
-				graphInfo={"type":"Point", "content":{"x":x,"y":y,"outline":color}}
-				graphInfoList.append(graphInfo)
-			elif isinstance(list[i],Line):
-				x1,y1=list[i].getP1().getX(),list[i].getP1().getY()
-				x2,y2=list[i].getP2().getX(),list[i].getP2().getY()			
-				color=list[i].config["fill"]
-				graphInfo={"type":"Line", "content":{"x1":x1,"y1":y1,"x2":x2,"y2":y2,"fill":color}}
-				graphInfoList.append(graphInfo)
-			elif isinstance(list[i],Rectangle):
-				x1,y1=list[i].getP1().getX(),list[i].getP1().getY()
-				x2,y2=list[i].getP2().getX(),list[i].getP2().getY()
-				outline=list[i].config["outline"]
-				fill=list[i].config["fill"]
-				graphInfo={"type":"Rectangle", "content":{"x1":x1,"y1":y1,"x2":x2,"y2":y2,"outline":outline,"fill":fill}}
-				graphInfoList.append(graphInfo)
-			elif isinstance(list[i],Circle):
-				x,y=list[i].getCenter().getX(),list[i].getCenter().getY()
-				r=list[i].getRadius()
-				outline=list[i].config["outline"]
-				fill=list[i].config["fill"]
-				graphInfo={"type":"Circle", "content":{"x":x,"y":y,"r":r,"outline":outline,"fill":fill}}
-				graphInfoList.append(graphInfo)
-			elif isinstance(list[i],Oval):
-				x1,y1=list[i].getP1().getX(),list[i].getP1().getY()
-				x2,y2=list[i].getP2().getX(),list[i].getP2().getY()
-				outline=list[i].config["outline"]
-				fill=list[i].config["fill"]
-				graphInfo={"type":"Oval", "content":{"x1":x1,"y1":y1,"x2":x2,"y2":y2,"outline":outline,"fill":fill}}
-				graphInfoList.append(graphInfo)
-		assDict["graph"]=graphInfoList
-		return assDict
-	
-	def save(self,filename):					
-		"""±£´æÖÁÎÄ¼ş"""
-		f=file(filename, 'w')
-		dump(self.exportDict(),f)
-		f.close()
-	
-	def load(self,filename):					
-		"""´ÓÎÄ¼şÖĞ¶ÁÈ¡£¬·µ»Ø³É¹¦Óë·ñ"""
-		try:
-			f=file(filename)
-			list=load(f)
-			self.importDict(list)
-			f.close()
-			return True
-		except:
-			return False
-	
-	def move(self,dx,dy):						
-		"""ÕûÌåÒÆ¶¯×éÍ¼"""
-		self._pos.move(dx,dy)
-		size=len(self._graphList)
-		for i in range(0,size):
-			self._graphList[i].move(dx,dy)
-	
-	def amplify(self,xscale,yscale,center=None):					
-		"""°´scale±ÈÀı·Å´óÍ¼"""
-		if center==None:
-			center=self._pos
-		self._width*=xscale
-		self._height*=yscale
-		dx=(xscale-1)*(self._pos.getX()-center.getX())
-		dy=(yscale-1)*(self._pos.getY()-center.getY())
-		self._pos.move(dx,dy)
-		if len(self._graphList)!=0:
-			canvas=self._graphList[0].canvas	#±£´æµ±Ç°»­²¼
-			willDraw=self._isDraw
-			self.undraw()
-			assDict=self.exportDict()
-			list=assDict["graph"]
-			size=len(list)
-			for i in range(0,size):
-				type=list[i]["type"]						
-				content=list[i]["content"]
-				if type=="Point":
-					content["x"]=(content["x"]-center.getX())*xscale+center.getX()
-					content["y"]=(content["y"]-center.getY())*yscale+center.getY()
-				elif type=="Circle":
-					list[i]["type"]="Oval"
-					x1,y1=content["x"]-content["r"],content["y"]-content["r"]
-					x2,y2=content["x"]+content["r"],content["y"]+content["r"]
-					content["x1"]=(x1-center.getX())*xscale+center.getX()
-					content["y1"]=(y1-center.getY())*yscale+center.getY()
-					content["x2"]=(x2-center.getX())*xscale+center.getX()
-					content["y2"]=(y2-center.getY())*yscale+center.getY()
-					del content["x"],content["y"]
-				elif type=="Line" or type=="Rectangle" or type=="Oval":
-					content["x1"]=(content["x1"]-center.getX())*xscale+center.getX()
-					content["y1"]=(content["y1"]-center.getY())*yscale+center.getY()
-					content["x2"]=(content["x2"]-center.getX())*xscale+center.getX()
-					content["y2"]=(content["y2"]-center.getY())*yscale+center.getY()
-							
-			self._importDict(assDict)
-			if willDraw:
-				self.draw(canvas)
-	
-	def moveTo(self,p):
-		"""ÒÆ¶¯×éÍ¼ÖÁÖ¸¶¨Î»ÖÃ"""
-		dx=p.getX()-self._pos.getX()
-		dy=p.getY()-self._pos.getY()
-		self.move(dx,dy)
-	
-	def amplifyTo(self,width,height,center=None):
-		"""·Å´ó×éÍ¼ÖÁÖ¸¶¨´óĞ¡"""
-		if self._width==0 or self._height==0:	#Ä¬ÈÏÎªÔ­Ê¼Í¼Ïñ
-			self._width=width
-			self._height=height
-		else:
-			xscale=width*1.0/self._width
-			yscale=height*1.0/self._height
-			self.amplify(xscale,yscale,center)
-		
-	def draw(self,window):						
-		"""»­µ±Ç°Í¼Ïñ"""
-		self._isDraw=True
-		size=len(self._graphList)
-		for i in range(0,size):
-			self._graphList[i].draw(window)
-	
-	def undraw(self):							
-		"""²Á³ıµ±Ç°Í¼Ïñ"""
-		if self._isDraw:
-			size=len(self._graphList)
-			for i in range(0,size):
-				self._graphList[i].undraw()
-			self._isDraw=False
-	
-	def inside(self,p):
-		"""µãpÊÇ·ñÔÚÍ¼ÏñÖĞ"""
-		xjudge=(self._pos.getX()-p.getX())*(self._pos.getX()+self._width-p.getX())
-		yjudge=(self._pos.getY()-p.getY())*(self._pos.getY()+self._height-p.getY())
-		return xjudge<=0 and yjudge<=0
-		
-	def isDraw(self):
-		return self._isDraw
-	
-	def pos(self):
-		return self._pos
-	
-	def width(self):
-		return self._width
-	
-	def height(self):
-		return self._height
+    def _importDict(self,assDict):
+        """ä»å­—å…¸ä¸­å¯¼å…¥ç»„å›¾ï¼Œä¸å¯¹å…¶å¤§å°è¿›è¡Œè°ƒæ•´"""
+        graphInfoList=assDict["graph"]
+        self._graphList=[]
+        size=len(graphInfoList)                 #fileDataListæ ¼å¼ï¼šlist=[{type,content},...]
+        for i in range(0,size):                 #å…¶ä¸­ï¼Œcontent={x0,x1,y0,y1,color0,color1,...}
+            type=graphInfoList[i]["type"]                           
+            content=graphInfoList[i]["content"]
+            if type=="Point":
+                graph=Point(content["x"],content["y"])
+                color=content["outline"]
+                graph.setOutline(color)
+                self._graphList.append(graph)
+            elif type=="Line":
+                p0,p1=Point(content["x1"],content["y1"]),Point(content["x2"],content["y2"])
+                graph=Line(p0,p1)
+                color=content["fill"]
+                graph.setFill(color)
+                self._graphList.append(graph)
+            elif type=="Rectangle":
+                p0,p1=Point(content["x1"],content["y1"]),Point(content["x2"],content["y2"])
+                graph=Rectangle(p0,p1)
+                outline=content["outline"]
+                fill=content["fill"]
+                graph.setOutline(outline)
+                graph.setFill(fill)
+                self._graphList.append(graph)
+            elif type=="Circle":
+                p=Point(content["x"],content["y"])
+                graph=Circle(p,content["r"])
+                outline=content["outline"]
+                fill=content["fill"]
+                graph.setOutline(outline)
+                graph.setFill(fill)
+                self._graphList.append(graph)
+            elif type=="Oval":
+                p0,p1=Point(content["x1"],content["y1"]),Point(content["x2"],content["y2"])
+                graph=Oval(p0,p1)
+                outline=content["outline"]
+                fill=content["fill"]
+                graph.setOutline(outline)
+                graph.setFill(fill)
+                self._graphList.append(graph)
+        
+    def exportDict(self):                   
+        """ä»ç°æœ‰å›¾ä¸­å¯¼å‡ºå­—å…¸"""
+        assDict={"state":{  "x":self._pos.getX(),
+                            "y":self._pos.getY(),
+                            "width":self._width,
+                            "height":self._height,
+                            "name":self.name}}
+        graphInfoList=[]
+        list=self._graphList
+        size=len(list)
+        for i in range(0,size):
+            if isinstance(list[i],Point):
+                x,y=list[i].getX(),list[i].getY()
+                color=list[i].config["outline"]
+                graphInfo={"type":"Point", "content":{"x":x,"y":y,"outline":color}}
+                graphInfoList.append(graphInfo)
+            elif isinstance(list[i],Line):
+                x1,y1=list[i].getP1().getX(),list[i].getP1().getY()
+                x2,y2=list[i].getP2().getX(),list[i].getP2().getY()         
+                color=list[i].config["fill"]
+                graphInfo={"type":"Line", "content":{"x1":x1,"y1":y1,"x2":x2,"y2":y2,"fill":color}}
+                graphInfoList.append(graphInfo)
+            elif isinstance(list[i],Rectangle):
+                x1,y1=list[i].getP1().getX(),list[i].getP1().getY()
+                x2,y2=list[i].getP2().getX(),list[i].getP2().getY()
+                outline=list[i].config["outline"]
+                fill=list[i].config["fill"]
+                graphInfo={"type":"Rectangle", "content":{"x1":x1,"y1":y1,"x2":x2,"y2":y2,"outline":outline,"fill":fill}}
+                graphInfoList.append(graphInfo)
+            elif isinstance(list[i],Circle):
+                x,y=list[i].getCenter().getX(),list[i].getCenter().getY()
+                r=list[i].getRadius()
+                outline=list[i].config["outline"]
+                fill=list[i].config["fill"]
+                graphInfo={"type":"Circle", "content":{"x":x,"y":y,"r":r,"outline":outline,"fill":fill}}
+                graphInfoList.append(graphInfo)
+            elif isinstance(list[i],Oval):
+                x1,y1=list[i].getP1().getX(),list[i].getP1().getY()
+                x2,y2=list[i].getP2().getX(),list[i].getP2().getY()
+                outline=list[i].config["outline"]
+                fill=list[i].config["fill"]
+                graphInfo={"type":"Oval", "content":{"x1":x1,"y1":y1,"x2":x2,"y2":y2,"outline":outline,"fill":fill}}
+                graphInfoList.append(graphInfo)
+        assDict["graph"]=graphInfoList
+        return assDict
+    
+    def save(self,filename):                    
+        """ä¿å­˜è‡³æ–‡ä»¶"""
+        f=file(filename, 'w')
+        dump(self.exportDict(),f)
+        f.close()
+    
+    def load(self,filename):                    
+        """ä»æ–‡ä»¶ä¸­è¯»å–ï¼Œè¿”å›æˆåŠŸä¸å¦"""
+        try:
+            f=file(filename)
+            list=load(f)
+            self.importDict(list)
+            f.close()
+            return True
+        except:
+            return False
+    
+    def move(self,dx,dy):                       
+        """æ•´ä½“ç§»åŠ¨ç»„å›¾"""
+        self._pos.move(dx,dy)
+        size=len(self._graphList)
+        for i in range(0,size):
+            self._graphList[i].move(dx,dy)
+    
+    def amplify(self,xscale,yscale,center=None):                    
+        """æŒ‰scaleæ¯”ä¾‹æ”¾å¤§å›¾"""
+        if center==None:
+            center=self._pos
+        self._width*=xscale
+        self._height*=yscale
+        dx=(xscale-1)*(self._pos.getX()-center.getX())
+        dy=(yscale-1)*(self._pos.getY()-center.getY())
+        self._pos.move(dx,dy)
+        if len(self._graphList)!=0:
+            canvas=self._graphList[0].canvas    #ä¿å­˜å½“å‰ç”»å¸ƒ
+            willDraw=self._isDraw
+            self.undraw()
+            assDict=self.exportDict()
+            list=assDict["graph"]
+            size=len(list)
+            for i in range(0,size):
+                type=list[i]["type"]                        
+                content=list[i]["content"]
+                if type=="Point":
+                    content["x"]=(content["x"]-center.getX())*xscale+center.getX()
+                    content["y"]=(content["y"]-center.getY())*yscale+center.getY()
+                elif type=="Circle":
+                    list[i]["type"]="Oval"
+                    x1,y1=content["x"]-content["r"],content["y"]-content["r"]
+                    x2,y2=content["x"]+content["r"],content["y"]+content["r"]
+                    content["x1"]=(x1-center.getX())*xscale+center.getX()
+                    content["y1"]=(y1-center.getY())*yscale+center.getY()
+                    content["x2"]=(x2-center.getX())*xscale+center.getX()
+                    content["y2"]=(y2-center.getY())*yscale+center.getY()
+                    del content["x"],content["y"]
+                elif type=="Line" or type=="Rectangle" or type=="Oval":
+                    content["x1"]=(content["x1"]-center.getX())*xscale+center.getX()
+                    content["y1"]=(content["y1"]-center.getY())*yscale+center.getY()
+                    content["x2"]=(content["x2"]-center.getX())*xscale+center.getX()
+                    content["y2"]=(content["y2"]-center.getY())*yscale+center.getY()
+                            
+            self._importDict(assDict)
+            if willDraw:
+                self.draw(canvas)
+    
+    def moveTo(self,p):
+        """ç§»åŠ¨ç»„å›¾è‡³æŒ‡å®šä½ç½®"""
+        dx=p.getX()-self._pos.getX()
+        dy=p.getY()-self._pos.getY()
+        self.move(dx,dy)
+    
+    def amplifyTo(self,width,height,center=None):
+        """æ”¾å¤§ç»„å›¾è‡³æŒ‡å®šå¤§å°"""
+        if self._width==0 or self._height==0:   #é»˜è®¤ä¸ºåŸå§‹å›¾åƒ
+            self._width=width
+            self._height=height
+        else:
+            xscale=width*1.0/self._width
+            yscale=height*1.0/self._height
+            self.amplify(xscale,yscale,center)
+        
+    def draw(self,window):                      
+        """ç”»å½“å‰å›¾åƒ"""
+        self._isDraw=True
+        size=len(self._graphList)
+        for i in range(0,size):
+            self._graphList[i].draw(window)
+    
+    def undraw(self):                           
+        """æ“¦é™¤å½“å‰å›¾åƒ"""
+        if self._isDraw:
+            size=len(self._graphList)
+            for i in range(0,size):
+                self._graphList[i].undraw()
+            self._isDraw=False
+    
+    def inside(self,p):
+        """ç‚¹pæ˜¯å¦åœ¨å›¾åƒä¸­"""
+        xjudge=(self._pos.getX()-p.getX())*(self._pos.getX()+self._width-p.getX())
+        yjudge=(self._pos.getY()-p.getY())*(self._pos.getY()+self._height-p.getY())
+        return xjudge<=0 and yjudge<=0
+        
+    def isDraw(self):
+        return self._isDraw
+    
+    def pos(self):
+        return self._pos
+    
+    def width(self):
+        return self._width
+    
+    def height(self):
+        return self._height
 
 
 def test():
-	w=55
-	win=GraphWin('Shapes',16*w,9*w)
-	win.setBackground('white')
-	gp=Assembly()
-	gp2=Assembly()
-	#gp2.load("bin/remove.dat")
-	#gp2.save("bin/restart.dat")
-	gp2.draw(win)
-	#gp2.amplifyTo(w,w,Point(4*w,3*w))
-	gp.load("bin/box2.dat")
-	gp.amplifyTo(w,w)
-	gp.draw(win)
-	#f=file('data.txt','w')
-	#f.write(repr(gp2.exportDict()))
-	#f.close()
-	#gp.save("bin/man.dat")
-	#print gp.exportDict()
-	pause=raw_input()
-	
+    w=55
+    win=GraphWin('Shapes',16*w,9*w)
+    win.setBackground('white')
+    gp=Assembly()
+    gp2=Assembly()
+    #gp2.load("bin/remove.dat")
+    #gp2.save("bin/restart.dat")
+    gp2.draw(win)
+    #gp2.amplifyTo(w,w,Point(4*w,3*w))
+    gp.load("bin/box2.dat")
+    gp.amplifyTo(w,w)
+    gp.draw(win)
+    #f=file('data.txt','w')
+    #f.write(repr(gp2.exportDict()))
+    #f.close()
+    #gp.save("bin/man.dat")
+    #print gp.exportDict()
+    pause=raw_input()
+    
 if __name__ == "__main__":
     test()
