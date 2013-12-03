@@ -181,6 +181,9 @@ namespace SystemProbe
         {
 
             List<Probe.DetectedData> lst = new List<Probe.DetectedData>();
+            Dictionary<string, double> ins2Space = new Dictionary<string, double>();
+            Dictionary<string, double> ins2SpacePer = new Dictionary<string, double>();
+            float memAvi = 0;
 
             foreach (CounterBind bind in counterList)
             {
@@ -188,19 +191,55 @@ namespace SystemProbe
                 {
                     Probe.DetectedData data = new Probe.DetectedData();
                     data.categoryName = bind.categoryName;
-                    data.instanceName = bind.instanceName;
+                    if (bind.instanceName.Length > 30)
+                    {
+                        data.instanceName = bind.instanceName.Substring(0, 30);
+                    }
+                    else
+                    {
+                        data.instanceName = bind.instanceName;
+                    }
                     data.value = bind.pc.NextValue();
+                    if (data.categoryName == SysMonitor.MemoryAvailableMBytes.Name)
+                    {
+                        memAvi = (float)data.value;
+                    }
+                    else if (data.categoryName == SysMonitor.LogicalDiscFreeSpace.Name)
+                    {
+                        ins2Space.Add(data.instanceName, (float)data.value);
+                    }
+                    else if (data.categoryName == SysMonitor.LogicalDiscFreeSpacePer.Name)
+                    {
+                        ins2SpacePer.Add(data.instanceName, (float)data.value);
+                    }
                     lst.Add(data);
                 }
                 catch
                 {
                 }
+                
             }
             Probe.DetectedData memdata = new Probe.DetectedData();
             memdata.categoryName = "内存总量(GB)";
             memdata.instanceName = "";
             memdata.value = this.memoryCapacity;
             lst.Add(memdata);
+
+            Probe.DetectedData memdataPer = new Probe.DetectedData();
+            memdataPer.categoryName = "内存使用百分比(百分数)";
+            memdataPer.instanceName = "";
+            memdataPer.value = (1 - memAvi / this.memoryCapacity / 1024) * 100;
+            lst.Add(memdataPer);
+
+            foreach (string instance in ins2Space.Keys)
+            {
+                Probe.DetectedData diskdataTotal = new Probe.DetectedData();
+                diskdataTotal.categoryName = "逻辑磁盘总空间(GB)";
+                diskdataTotal.instanceName = instance;
+                diskdataTotal.value = ins2Space[instance] / ins2SpacePer[instance] * 100 / 1024;
+                lst.Add(diskdataTotal);
+            }
+
             return lst;
         }
         #endregion
@@ -244,14 +283,14 @@ namespace SystemProbe
             counterName = @"% DPC Time"
         };
 
-        private static SysInfo LogicalDiscFreeSpace = new SysInfo
+        public static SysInfo LogicalDiscFreeSpace = new SysInfo
         {
             Name = @"逻辑磁盘可用空间(MB)",
             objectName = @"LogicalDisk",
             counterName = @"Free Megabytes"
         };
 
-        private static SysInfo LogicalDiscFreeSpacePer = new SysInfo
+        public static SysInfo LogicalDiscFreeSpacePer = new SysInfo
         {
             Name = @"逻辑磁盘可用空间百分比(百分数)",
             objectName = @"LogicalDisk",
@@ -279,6 +318,27 @@ namespace SystemProbe
             counterName = @"Avg. Disk sec/Write"
         };
 
+        private static SysInfo LogDiskMBytesTransfer = new SysInfo
+        {
+            Name = @"逻辑磁盘传输速率(MB/s)",
+            objectName = @"LogicalDisk",
+            counterName = @"Disk Transfers/sec"
+        };
+
+        private static SysInfo LogDiskMBytesRead = new SysInfo
+        {
+            Name = @"逻辑磁盘读取速率(MB/s)",
+            objectName = @"LogicalDisk",
+            counterName = @"Disk Reads/sec"
+        };
+
+        private static SysInfo LogDiskMBytesWrite = new SysInfo
+        {
+            Name = @"逻辑磁盘写入速率(MB/s)",
+            objectName = @"LogicalDisk",
+            counterName = @"Disk Writes/sec"
+        };
+
         private static SysInfo AvgPhsDiskSecTransfer = new SysInfo
         {
             Name = @"实体磁盘每次传输的平均秒数(秒)",
@@ -300,11 +360,53 @@ namespace SystemProbe
             counterName = @"Avg. Disk sec/Write"
         };
 
-        private static SysInfo MemoryAvailableMBytes = new SysInfo
+        private static SysInfo PhsDiskMBytesTransfer = new SysInfo
+        {
+            Name = @"实体磁盘传输速率(MB/s)",
+            objectName = @"PhysicalDisk",
+            counterName = @"Disk Transfers/sec"
+        };
+
+        private static SysInfo PhsDiskMBytesRead = new SysInfo
+        {
+            Name = @"实体磁盘读取速率(MB/s)",
+            objectName = @"PhysicalDisk",
+            counterName = @"Disk Reads/sec"
+        };
+
+        private static SysInfo PhsDiskMBytesWrite = new SysInfo
+        {
+            Name = @"实体磁盘写入速率(MB/s)",
+            objectName = @"PhysicalDisk",
+            counterName = @"Disk Writes/sec"
+        };
+
+        public static SysInfo MemoryAvailableMBytes = new SysInfo
         {
             Name = @"内存可用空间(MB)",
             objectName = @"Memory",
             counterName = @"Available MBytes"
+        };
+
+        private static SysInfo NetworkRecvBytes = new SysInfo
+        {
+            Name = @"网络字节接收速率(B/s)",
+            objectName = @"Network Interface",
+            counterName = @"Bytes Received/sec"
+        };
+
+        private static SysInfo NetworkSendBytes = new SysInfo
+        {
+            Name = @"网络字节发送速率(B/s)",
+            objectName = @"Network Interface",
+            counterName = @"Bytes Sent/sec"
+        };
+
+        private static SysInfo NetworkTotalBytes = new SysInfo
+        {
+            Name = @"网络字节接收发送总速率(B/s)",
+            objectName = @"Network Interface",
+            counterName = @"Bytes Total/sec"
         };
 
         public static List<SysInfo> WindowsServiceMonitors = new List<SysInfo> 
@@ -319,12 +421,22 @@ namespace SystemProbe
             AvgLogDiskSecTransfer,
             AvgLogDiskSecRead,
             AvgLogDiskSecWrite,
+            LogDiskMBytesTransfer,
+            LogDiskMBytesRead,
+            LogDiskMBytesWrite,
             
             AvgPhsDiskSecTransfer,
             AvgPhsDiskSecRead,
             AvgPhsDiskSecWrite,
+            PhsDiskMBytesTransfer,
+            PhsDiskMBytesRead,
+            PhsDiskMBytesWrite,
             
-            MemoryAvailableMBytes
+            MemoryAvailableMBytes,
+
+            NetworkRecvBytes,
+            NetworkSendBytes,
+            NetworkTotalBytes
         };
     }
 }
