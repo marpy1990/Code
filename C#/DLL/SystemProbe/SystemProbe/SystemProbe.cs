@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading;
+using System.Management;
 
 
 namespace SystemProbe
@@ -145,6 +146,8 @@ namespace SystemProbe
 
         List<CounterBind> counterList = new List<CounterBind>();
 
+        double memoryCapacity = 0;
+
         public SystemProbe()
         {
             string machineName = Environment.MachineName;
@@ -160,6 +163,16 @@ namespace SystemProbe
                     categoryTable[pcObj.Name].Add(instanceName);
                 }
             }
+
+            ManagementClass cimobject1 = new ManagementClass("Win32_PhysicalMemory");
+            ManagementObjectCollection moc1 = cimobject1.GetInstances();
+            foreach (ManagementObject mo1 in moc1)
+            {
+                this.memoryCapacity += ((Math.Round(Int64.Parse(mo1.Properties["Capacity"].Value.ToString()) / 1024 / 1024 / 1024.0, 1)));
+            }
+            moc1.Dispose();
+            cimobject1.Dispose();
+
             checkInstanceTimer = new Timer((object state) => this.CheckInstance());
             checkInstanceTimer.Change(1000, 1000);
         }
@@ -183,6 +196,11 @@ namespace SystemProbe
                 {
                 }
             }
+            Probe.DetectedData memdata = new Probe.DetectedData();
+            memdata.categoryName = "内存总量(GB)";
+            memdata.instanceName = "";
+            memdata.value = this.memoryCapacity;
+            lst.Add(memdata);
             return lst;
         }
         #endregion
@@ -200,84 +218,91 @@ namespace SystemProbe
     {
         private static SysInfo CpuUsage = new SysInfo
         {
-            Name = @"%CPU Usage",
+            Name = @"CPU总使用率百分比(百分数)",
             objectName = @"Processor",
             counterName = @"% Processor Time"
         };
 
         private static SysInfo InterruptTime = new SysInfo
         {
-            Name = @"%Interrupt Time",
+            Name = @"处理器总中断时间百分比(百分数)",
             objectName = @"Processor",
             counterName = @"% Interrupt Time"
         };
 
         private static SysInfo ProcessorTime = new SysInfo
         {
-            Name = @"%Processor Time",
+            Name = @"处理器处理时间总数百分比(百分数)",
             objectName = @"Processor",
             counterName = @"% User Time"
         };
 
         private static SysInfo DPCTime = new SysInfo
         {
-            Name = @"%DPC Time",
+            Name = @"处理器总DPC时间百分比(百分数)",
             objectName = @"Processor",
             counterName = @"% DPC Time"
         };
 
         private static SysInfo LogicalDiscFreeSpace = new SysInfo
         {
-            Name = @"Logical Disc Free Space",
+            Name = @"逻辑磁盘可用空间(MB)",
             objectName = @"LogicalDisk",
             counterName = @"Free Megabytes"
         };
 
+        private static SysInfo LogicalDiscFreeSpacePer = new SysInfo
+        {
+            Name = @"逻辑磁盘可用空间百分比(百分数)",
+            objectName = @"LogicalDisk",
+            counterName = @"% Free Space"
+        };
+
         private static SysInfo AvgLogDiskSecTransfer = new SysInfo
         {
-            Name = @"Avg. Log. Disk sec/Transfer",
+            Name = @"逻辑磁盘每次传输的平均秒数(秒)",
             objectName = @"LogicalDisk",
             counterName = @"Avg. Disk sec/Transfer"
         };
 
         private static SysInfo AvgLogDiskSecRead = new SysInfo
         {
-            Name = @"Avg. Log. Disk sec/Read",
+            Name = @"逻辑磁盘每次读取的平均秒数(秒)",
             objectName = @"LogicalDisk",
             counterName = @"Avg. Disk sec/Read"
         };
 
         private static SysInfo AvgLogDiskSecWrite = new SysInfo
         {
-            Name = @"Avg. Log. Disk sec/Write",
+            Name = @"逻辑磁盘每次写入的平均秒数(秒)",
             objectName = @"LogicalDisk",
             counterName = @"Avg. Disk sec/Write"
         };
 
         private static SysInfo AvgPhsDiskSecTransfer = new SysInfo
         {
-            Name = @"Avg. Phs. Disk sec/Transfer",
+            Name = @"实体磁盘每次传输的平均秒数(秒)",
             objectName = @"PhysicalDisk",
             counterName = @"Avg. Disk sec/Transfer"
         };
 
         private static SysInfo AvgPhsDiskSecRead = new SysInfo
         {
-            Name = @"Avg. Phs. Disk sec/Read",
+            Name = @"实体磁盘每次读取的平均秒数(秒)",
             objectName = @"PhysicalDisk",
             counterName = @"Avg. Disk sec/Read"
         };
 
         private static SysInfo AvgPhsDiskSecWrite = new SysInfo
         {
-            Name = @"Avg. Phs. Disk sec/Write",
+            Name = @"实体磁盘每次写入的平均秒数(秒)",
             objectName = @"PhysicalDisk",
             counterName = @"Avg. Disk sec/Write"
         };
 
         private static SysInfo MemoryAvailableMBytes = new SysInfo
         {
-            Name = @"Memory Available MBytes",
+            Name = @"内存可用空间(MB)",
             objectName = @"Memory",
             counterName = @"Available MBytes"
         };
@@ -290,6 +315,7 @@ namespace SystemProbe
             DPCTime,
             
             LogicalDiscFreeSpace,
+            LogicalDiscFreeSpacePer,
             AvgLogDiskSecTransfer,
             AvgLogDiskSecRead,
             AvgLogDiskSecWrite,

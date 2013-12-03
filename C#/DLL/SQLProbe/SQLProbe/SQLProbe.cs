@@ -26,44 +26,44 @@ namespace SQLProbe
                 foreach (Database db in sv.Databases)
                 {
                     Probe.DetectedData data = new Probe.DetectedData();
-                    data.categoryName = @"Auto Close Flag";
+                    data.categoryName = @"数据库AutoClose Flag(布尔型)";
                     data.instanceName = db.Name;
                     data.value = db.AutoClose;
                     lst.Add(data);
 
                     data = new Probe.DetectedData();
-                    data.categoryName = @"Auto Create Statistics Flag";
+                    data.categoryName = @"数据库AutoCreateStatistics Flag(布尔型)";
                     data.instanceName = db.Name;
                     data.value = db.AutoCreateStatisticsEnabled;
                     lst.Add(data);
 
                     data = new Probe.DetectedData();
-                    data.categoryName = @"Auto Shrink Flag";
+                    data.categoryName = @"数据库AutoShrink Flag(布尔型)";
                     data.instanceName = db.Name;
                     data.value = db.AutoShrink;
                     lst.Add(data);
 
                     data = new Probe.DetectedData();
-                    data.categoryName = @"DB Chaining Flag";
+                    data.categoryName = @"数据库Chaining Flag(布尔型)";
                     data.instanceName = db.Name;
                     data.value = db.DatabaseOwnershipChaining;
                     lst.Add(data);
 
                     data = new Probe.DetectedData();
-                    data.categoryName = @"Auto Update Flag";
+                    data.categoryName = @"数据库AutoUpdate Flag(布尔型)";
                     data.instanceName = db.Name;
                     data.value = db.IsUpdateable;
                     lst.Add(data);
 
                     data = new Probe.DetectedData();
-                    data.categoryName = @"DB Space Free%";
+                    data.categoryName = @"数据库剩余空间百分比(百分数)";
                     data.instanceName = db.Name;
                     data.value = db.SpaceAvailable / (db.SpaceAvailable + db.DataSpaceUsage) * 100;
                     lst.Add(data);
 
                     double spaceAvi = (double)data.value;
                     data = new Probe.DetectedData();
-                    data.categoryName = @"DB UsedSpace% Change";
+                    data.categoryName = @"数据库使用空间的改变量(百分数/秒)";
                     data.instanceName = db.Name;
                     if (lastDBUsage.ContainsKey(db.Name))
                     {
@@ -79,7 +79,7 @@ namespace SQLProbe
                     lst.Add(data);
 
                     data = new Probe.DetectedData();
-                    data.categoryName = @"Transaction Log Space Free%";
+                    data.categoryName = @"数据库事务日志剩余空间百分比(百分数)";
                     data.instanceName = db.Name;
                     double value = 0, totalValue = 0;
                     foreach (LogFile logFile in db.LogFiles)
@@ -93,7 +93,7 @@ namespace SQLProbe
                 }
 
                 svdata = new Probe.DetectedData();
-                svdata.categoryName = @"SQL Version";
+                svdata.categoryName = @"数据库版本号";
                 svdata.instanceName = "";
                 svdata.value = sv.VersionString;
                 lst.Add(svdata);
@@ -105,42 +105,42 @@ namespace SQLProbe
             try
             {
                 svdata = new Probe.DetectedData();
-                svdata.categoryName = @"SQL Server";
+                svdata.categoryName = @"SQL Server状态";
                 svdata.instanceName = "";
                 ServiceController scServices = new ServiceController("MSSQLSERVER", Environment.MachineName);
                 svdata.value = scServices.Status.ToString();
                 lst.Add(svdata);
 
                 svdata = new Probe.DetectedData();
-                svdata.categoryName = @"SQL 2008 Agent";
+                svdata.categoryName = @"SQL 2008 Agent状态";
                 svdata.instanceName = "";
                 scServices = new ServiceController("SQLSERVERAGENT", Environment.MachineName);
                 svdata.value = scServices.Status.ToString();
                 lst.Add(svdata);
 
                 svdata = new Probe.DetectedData();
-                svdata.categoryName = @"SQL Server Analysis Services";
+                svdata.categoryName = @"SQL Server Analysis Services状态";
                 svdata.instanceName = "";
                 scServices = new ServiceController("MSSQLServerOLAPService", Environment.MachineName);
                 svdata.value = scServices.Status.ToString();
                 lst.Add(svdata);
 
                 svdata = new Probe.DetectedData();
-                svdata.categoryName = @"SQL 2005 Integration Services";
+                svdata.categoryName = @"SQL 2005 Integration Services状态";
                 svdata.instanceName = "";
                 scServices = new ServiceController("MsDtsServer100", Environment.MachineName);
                 svdata.value = scServices.Status.ToString();
                 lst.Add(svdata);
 
                 svdata = new Probe.DetectedData();
-                svdata.categoryName = @"SQL Server Reporting Services";
+                svdata.categoryName = @"SQL Server Reporting Services状态";
                 svdata.instanceName = "";
                 scServices = new ServiceController("MsDtsServer100", Environment.MachineName);
                 svdata.value = scServices.Status.ToString();
                 lst.Add(svdata);
 
                 svdata = new Probe.DetectedData();
-                svdata.categoryName = @"SQL Server Full Text Search Service";
+                svdata.categoryName = @"SQL Server Full Text Search Service状态";
                 svdata.instanceName = "";
                 scServices = new ServiceController("MSSQLFDLauncher", Environment.MachineName);
                 svdata.value = scServices.Status.ToString();

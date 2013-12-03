@@ -1,5 +1,5 @@
 from xml.etree import ElementTree
-import os
+import subprocess
 import functools
 import threading
 
@@ -42,6 +42,7 @@ class IProbe(object):
         self._name = None
         self._state = STOPPED
         self._state_block = threading.Semaphore(1)
+        self._probeproc = None
         self._categorys = []
         self._category2period = {}
         self._parse(path)
@@ -62,15 +63,13 @@ class IProbe(object):
     def state(self):
         return self._state
 
-    @thread
+    #@thread
     @security
     def runprobe(self):
         cmd = self.config.find("start_command").text
-        try:
-            self._state = RUNNING
-            os.system(cmd)
-        except:
-            self._state = ERROR
+
+        self._state = RUNNING
+        self._probeproc = subprocess.Popen(cmd, shell = True)
 
     @security
     def connect(self):
@@ -97,9 +96,8 @@ class IProbe(object):
     @security
     def stopprobe(self):
         if self._state is RUNNING:
-            msg = self._shutdown2str()
-            self.connection.send(msg)
             self.connection.close()
+            self._probeproc.kill(self._probepid)
             self._state = STOPPED
 
     @security

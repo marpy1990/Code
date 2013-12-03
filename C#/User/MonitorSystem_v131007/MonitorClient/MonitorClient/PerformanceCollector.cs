@@ -85,7 +85,7 @@ namespace MonitorClient
         private void LoadProbeFileError(string probeFile)
         {
             //可选
-            MessageBox.Show("LoadProbeFileError");
+            //MessageBox.Show("LoadProbeFileError");
         }
 
         /// <summary>

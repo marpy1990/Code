@@ -46,7 +46,7 @@ namespace MonitorClient
         /// <summary>
         /// 测试处理器，仅供测试用
         /// </summary>
-        public static Test test = new Test();
+        //public static Test test = new Test();
 
         #endregion
 
