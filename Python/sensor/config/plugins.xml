@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE plugins [
+<!ELEMENT plugins (plugin)+>
+<!ELEMENT plugin (module,class)>
+<!ELEMENT module (#PCDATA)>
+<!ELEMENT class (#PCDATA)>]>
+<plugins>
+  <plugin>
+    <module>Logger</module>
+    <class>Logger</class>
+  </plugin>
+  <plugin>
+    <module>Shell</module>
+    <class>Shell</class>
+  </plugin>
+  <plugin>
+    <module>Portal</module>
+    <class>Portal</class>
+  </plugin>
+  <plugin>
+    <module>SystemProbe</module>
+    <class>SystemProbe</class>
+  </plugin>
+</plugins>
