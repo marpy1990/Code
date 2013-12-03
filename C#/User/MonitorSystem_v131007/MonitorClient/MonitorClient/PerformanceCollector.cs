@@ -46,7 +46,7 @@ namespace MonitorClient
             }
             catch
             {
-                //MessageBox.Show("ProbeBuilding Error");
+                MessageBox.Show("ProbeBuilding Error");
             }
         }
 
@@ -85,7 +85,7 @@ namespace MonitorClient
         private void LoadProbeFileError(string probeFile)
         {
             //可选
-            //MessageBox.Show("LoadProbeFileError");
+            MessageBox.Show("LoadProbeFileError");
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace MonitorClient
         private void LoadProbeBootFileError()
         {
             //可选
-            //MessageBox.Show("LoadProbeBootFileError");
+            MessageBox.Show("LoadProbeBootFileError");
         }
         #endregion
 
@@ -155,7 +155,7 @@ namespace MonitorClient
         private void PerformanceCollectError(Probe.Probe probe)
         {
             //可选
-            //MessageBox.Show(probe.ToString());
+            MessageBox.Show(probe.ToString());
         }
 
         /// <summary>

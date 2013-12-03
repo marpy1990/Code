@@ -15,26 +15,23 @@ __date__ = "$Date: 2013-10-22$"
 
 # standard library modules
 import logging
-from logging.handlers import TimedRotatingFileHandler
 import functools
 
 # functions
 def initlog():
     logger = logging.getLogger()
-    hdlr = TimedRotatingFileHandler("debug.log","M",1,3)
-    #hdlr.doRollover()
-
-    formatter = logging.Formatter('\n%(levelname)-7s | %(asctime)-24s | === %(message)s ===')
+    hdlr = logging.FileHandler("debug.log")
+    
+    formatter = logging.Formatter('\n%(asctime)s ===%(message)s===')
     hdlr.setFormatter(formatter)
     logger.addHandler(hdlr)
     logger.setLevel(logging.NOTSET)
-    logger.info("begin","test")
+    logger.debug("start")
 
-    formatter = logging.Formatter('%(levelname)-7s | %(asctime)-23s | %(filename)s %(thread)d %(message)s')
+    formatter = logging.Formatter('%(asctime)s %(threadName)s %(thread)d %(message)s')
     hdlr.setFormatter(formatter)
     logger.addHandler(hdlr)
     logger.setLevel(logging.NOTSET)
-    logger.info("start")
     return logger
 
 # globals
@@ -60,7 +57,7 @@ def writelog(func):
             message = message[:-2]
         message = message+")"
 
-        debug_log.warning(message+" enter")
+        debug_log.debug(message+" enter")
         ret = func(*args, **kwargs)
         debug_log.debug(message+ " leave")
         return ret
