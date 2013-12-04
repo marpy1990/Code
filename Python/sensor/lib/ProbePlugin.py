@@ -57,10 +57,12 @@ class PushModeProbe(BaseProbe):
         self.trigger("register", args = (self._categorys.keys(), ), timeout = 3.0)
 
     def set_period(self, category, period):
-        self._conn.set_period(category, period)
+        if self._categorys.has_key(category):
+            self._conn.set_period(category, period)
 
     def cancel_category(self, category):
-        self._conn.cancel_category(category)
+        if self._categorys.has_key(category):
+            self._conn.cancel_category(category)
 
     def exit(self):
         self.cancel()
